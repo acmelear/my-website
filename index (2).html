@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRUMP Coin Investment Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .input-container {
+            margin: 20px 0;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 100%;
+            max-width: 300px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .data-details {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>TRUMP Coin Investment Predictor</h1>
+        <p>Enter the date you bought TRUMP coin and the date you'd like to predict the price for:</p>
+
+        <div class="input-container">
+            <label for="buyDate">Date Bought (YYYY-MM-DD):</label>
+            <input type="date" id="buyDate">
+        </div>
+
+        <div class="input-container">
+            <label for="predictDate">Date to Predict (YYYY-MM-DD):</label>
+            <input type="date" id="predictDate">
+        </div>
+
+        <div class="input-container">
+            <label for="coinsOwned">Number of $TRUMP coins owned:</label>
+            <input type="number" id="coinsOwned" placeholder="Enter number of coins">
+        </div>
+
+        <button onclick="predictValue()">Predict Future Value</button>
+
+        <div class="result" id="result"></div>
+        <div class="data-details" id="dataDetails"></div>
+    </div>
+
+    <script>
+        // Current price of $TRUMP Coin (latest known value)
+        const currentPrice = 45.07;  // Example: $45.07 USD as the current price (January 19, 2025)
+
+        // Hypothetical past price for the sake of calculation
+        const pastPrice = 6.24;  // Example: Price on January 17, 2025 (just 2 days ago)
+
+        // Function to calculate percentage change between two prices
+        function calculatePercentageChange(past, current) {
+            return ((current - past) / past) * 100;
+        }
+
+        // Function to predict the future price
+        function predictValue() {
+            const buyDate = document.getElementById('buyDate').value;
+            const predictDate = document.getElementById('predictDate').value;
+            const coinsOwned = parseFloat(document.getElementById('coinsOwned').value);
+
+            // Error handling for empty inputs
+            if (!buyDate || !predictDate || !coinsOwned) {
+                document.getElementById('result').innerHTML = '<span class="error">Please fill in all fields.</span>';
+                return;
+            }
+
+            // Calculate the time difference in days between the two dates
+            const buyDateObj = new Date(buyDate);
+            const predictDateObj = new Date(predictDate);
+            const timeDifferenceInDays = (predictDateObj - buyDateObj) / (1000 * 3600 * 24);
+
+            if (timeDifferenceInDays <= 0) {
+                document.getElementById('result').innerHTML = '<span class="error">Prediction date must be after the buy date.</span>';
+                return;
+            }
+
+            // Calculate the percentage change over the past few days
+            const percentageChange = calculatePercentageChange(pastPrice, currentPrice);
+            const predictedPrice = currentPrice * (1 + (percentageChange / 100) * (timeDifferenceInDays / 2)); // Linear growth assumption (simplified)
+
+            const investmentValueNow = coinsOwned * currentPrice;
+            const predictedValue = coinsOwned * predictedPrice;
+
+            // Show result
+            document.getElementById('result').innerHTML = `
+                <p>Your investment is worth $${investmentValueNow.toFixed(2)} USD right now.</p>
+                <p>Based on past trends, by <strong>${predictDate}</strong>, your investment could be worth approximately <strong>$${predictedValue.toFixed(2)}</strong> USD.</p>
+                <p>Prediction assumes linear growth over time.</p>
+            `;
+
+            // Show detailed prediction calculation breakdown
+            document.getElementById('dataDetails').innerHTML = `
+                <h3>How We Predicted the Value:</h3>
+                <ul>
+                    <li><strong>Past Price (Jan 17, 2025):</strong> $${pastPrice}</li>
+                    <li><strong>Current Price (Jan 19, 2025):</strong> $${currentPrice}</li>
+                    <li><strong>Price Change (%):</strong> ${percentageChange.toFixed(2)}%</li>
+                    <li><strong>Time Difference:</strong> ${timeDifferenceInDays.toFixed(0)} days</li>
+                    <li><strong>Prediction Method:</strong> Linear growth based on past price changes</li>
+                    <li><strong>Predicted Price on ${predictDate}:</strong> $${predictedPrice.toFixed(2)}</li>
+                    <li><strong>Investment Value Now:</strong> $${investmentValueNow.toFixed(2)}</li>
+                    <li><strong>Predicted Investment Value:</strong> $${predictedValue.toFixed(2)}</li>
+                </ul>
+            `;
+        }
+    </script>
+
+</body>
+</html>
